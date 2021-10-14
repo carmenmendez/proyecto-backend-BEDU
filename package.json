@@ -1,0 +1,24 @@
+{
+  "name": "proyecto-backend-bedu",
+  "version": "1.0.0",
+  "description": "backend for scoreboard app",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "node",
+    "backend",
+    "mongo"
+  ],
+  "author": "carmenmendez",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.13"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
