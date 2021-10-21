@@ -3,7 +3,11 @@ const bodyParser = require('body-parser')
 const { json } = require('body-parser')
 const app = express()
 
-// hardcoded temporal
+
+// Datos estáticos temporales
+// Temporalmente guardamos los usuarios en memoria y después los guardaremos en una BD
+let usuarios = []
+let scoreboards = []
 const games = [
     {
         id: 1234567890,
@@ -18,8 +22,6 @@ const games = [
         scores: ['points', 'beautiful points']
     }
 ]
-// Temporalmente guardamos los usuarios en memoria y después los guardaremos en una BD
-let usuarios = []
 
 // middleware
 app.use(bodyParser.json())
@@ -44,6 +46,62 @@ app.get('/games/:slug', (req, res) =>  {
 
     return res.json(game)
 })
+
+// obtener todos los scoreboards de un juego en específico
+app.get('/scoreboards/:gameSlug', (req, res) => {
+    const gameSlug = req.params.gameSlug;
+    const filteredScoreboards = scoreboards.filter((scoreboard) => {
+        console.log(scoreboard.gameSlug)
+        return scoreboard.gameSlug === gameSlug
+    })
+    console.log('gameslug: ', gameSlug, 'filtered games: ', filteredScoreboards)
+    if(filteredScoreboards.length > 0) {
+        return res.json({
+            error: null,
+            scoreboards: filteredScoreboards
+        })
+    }
+
+    res.status(404)
+    return res.json({
+        error: 'No se encontraron scoreboards para este juego'
+    })
+})
+
+// crear un scoreboard para un juego en específico
+app.post('/scoreboards/:gameSlug', (req, res) => {
+    const gameSlug = req.params.gameSlug;
+    const { gameName, players } = req.body;
+
+    // sumar los scores de los jugadores
+    const playersUpdated = players.map((player) => {
+        let scoreTotal = 0;
+        player.scores.forEach((score) => {
+            scoreTotal += score.scoreValue
+        })
+        player.total = scoreTotal;
+        return player;
+    })
+
+    const scoreboard = {
+        createdAt: new Date(),
+        gameSlug,
+        gameName,
+        players: playersUpdated
+    }
+
+    scoreboards.push(scoreboard)
+
+    console.log('Scoreboards: ', scoreboards)
+
+    return res.json({
+        error: null,
+        scoreboard
+    })
+})
+
+// obtener todos los scoreboards de un juego
+
 
 app.post('/login', (req, res) => {
     // leer del request los datos de email y password
