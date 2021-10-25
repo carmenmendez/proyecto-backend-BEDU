@@ -5,7 +5,7 @@ const app = express()
 
 
 // Datos estáticos temporales
-// Temporalmente guardamos los usuarios en memoria y después los guardaremos en una BD
+// Temporalmente guardar los usuarios en memoria y después los guardare en una BD
 let usuarios = []
 let scoreboards = []
 const games = [
@@ -51,10 +51,9 @@ app.get('/games/:slug', (req, res) =>  {
 app.get('/scoreboards/:gameSlug', (req, res) => {
     const gameSlug = req.params.gameSlug;
     const filteredScoreboards = scoreboards.filter((scoreboard) => {
-        console.log(scoreboard.gameSlug)
         return scoreboard.gameSlug === gameSlug
     })
-    console.log('gameslug: ', gameSlug, 'filtered games: ', filteredScoreboards)
+
     if(filteredScoreboards.length > 0) {
         return res.json({
             error: null,
@@ -84,6 +83,7 @@ app.post('/scoreboards/:gameSlug', (req, res) => {
     })
 
     const scoreboard = {
+        id: Math.round(Math.random() * 1000000), // ID FALSO TEMPORAL 
         createdAt: new Date(),
         gameSlug,
         gameName,
@@ -101,7 +101,25 @@ app.post('/scoreboards/:gameSlug', (req, res) => {
 })
 
 // obtener todos los scoreboards de un juego
+app.get('/scoreboards/:gameSlug/:scoreId', (req, res) => {
+    const gameSlug = req.params.gameSlug;
+    const scoreId = req.params.scoreId;
+    const scoreboard = scoreboards.find( (scoreboard) => {
+        return scoreboard.id == scoreId && scoreboard.gameSlug === gameSlug
+    })
 
+    if (scoreboard === undefined) {
+        res.status(404)
+        return res.json({
+            error: 'Score board no encontrado'
+        })
+    }
+
+    return res.json({
+        error: null,
+        scoreboard,
+    })
+})
 
 app.post('/login', (req, res) => {
     // leer del request los datos de email y password
